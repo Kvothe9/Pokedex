@@ -46,7 +46,14 @@ button {
 /* Aquí todo el CSS extra */
 body {
     min-height: 100vh;
-    background-color: var(--clr-gray);
+    background-image: url("https://img.freepik.com/free-vector/gradient-zoom-effect-blue-background_23-2149762303.jpg?t=st=1726516105~exp=1726519705~hmac=271a003937388afc80e51e8d782153fb45cfd1e6f386528408a3c4c9704d72b1&w=996");
+    width: 100%;
+    height: 100%;
+    background-size: cover; /* Ajusta la imagen para que cubra todo el área */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
 }
 
 header {
@@ -140,6 +147,7 @@ main {
     padding-inline: 1rem;
     display: flex;
     justify-content: center;
+    transition: .3s;
 }
 
 .image_pokemon img {
@@ -292,4 +300,53 @@ main {
 .fairy {
     background-color: var(--type-fairy);
     color: var(--clr-black);
+}
+
+.gen1 {
+    background: linear-gradient(to right, #fb0000 50%, #0000f0 50%);
+
+}
+
+.gen2 {
+    background: linear-gradient(to right, #d7bf00 50%, #949495 50%);
+
+}
+
+.gen3 {
+    background: linear-gradient(to right, #d60000 50%, #0000bc 50%);
+
+}
+
+.gen4 {
+    background: linear-gradient(to right, #365de0 50%, #fd5edb 50%);
+
+}
+
+.gen5 {
+    background: linear-gradient(to right, #393839 50%, #dfdfdf 50%);
+
+}
+
+.gen6 {
+    background: linear-gradient(to right, #004585 50%, #8d0000 50%);
+
+}
+
+.gen7 {
+    background: linear-gradient(to right, #fd8b02 50%, #c627ea 50%);
+
+}
+
+.gen8 {
+    background: linear-gradient(to right, #009be9 50%, #fd1d63 50%);
+
+}
+
+.gen9 {
+    background: linear-gradient(to right, #b4180e 50%, #5a1176 50%);
+
+}
+
+.image_pokemon:hover {
+    transform: scale(1.2);
 }
