@@ -33,7 +33,7 @@ function cargarPokemon() {
 function mostrarPokemon(data) {
     let types = data.types.map((type) => `<p class="${type.type.name} type">${type.type.name}</p>`).join('');
     
-    let pokeId = data.id.toString().padStart(3, '0'); // Formatear el ID para que siempre tenga 3 dígitos
+    let pokeId = data.id.toString().padStart(4, '0'); // Formatear el ID para que siempre tenga 3 dígitos
 
     const div = document.createElement("div");
     div.classList.add("pokemon");
@@ -49,8 +49,8 @@ function mostrarPokemon(data) {
             </div>
             <div class="types_pokemon">${types}</div>
             <div class="stats">
-                <p class="stat">${data.height}m</p>
-                <p class="stat">${data.weight}kg</p>
+                <p class="stat">${data.height/10}m</p>
+                <p class="stat">${data.weight/10}kg</p>
             </div>
         </div>
     `;
@@ -73,31 +73,31 @@ function filtrarPokemon(btnId) {
         case 'ver-todos':
             filteredPokemon = cachedPokemonData;
             break;
-        case '1-generacion':
+        case 'gen1':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id <= 151);
             break;
-        case '2-generacion':
+        case 'gen2':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 151 && pokemon.id <= 251);
             break;
-        case '3-generacion':
+        case 'gen3':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 251 && pokemon.id <= 386);
             break;
-        case '4-generacion':
+        case 'gen4':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 386 && pokemon.id <= 493);
             break;
-        case '5-generacion':
+        case 'gen5':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 493 && pokemon.id <= 649);
             break;
-        case '6-generacion':
+        case 'gen6':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 649 && pokemon.id <= 721);
             break;
-        case '7-generacion':
+        case 'gen7':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 721 && pokemon.id <= 809);
             break;
-        case '8-generacion':
+        case 'gen8':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 809 && pokemon.id <= 905);
             break;
-        case '9-generacion':
+        case 'gen9':
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 905 && pokemon.id <= 1025);
             break;
         default:
