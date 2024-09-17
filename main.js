@@ -1,46 +1,39 @@
 const pokemonList = document.querySelector("#pokemon_list");
 const btnHeader = document.querySelectorAll(".btn-header");
 const URL = "https://pokeapi.co/api/v2/pokemon/";
+let cachedPokemonData = [];
 
-let cachedPokemonData = []; // Cache para almacenar todos los Pokémon
-
-// Función para obtener todos los Pokémon de la API de forma incremental
-async function fetchAllPokemonIncremental() {
+async function fetchAllPokemonInParallel() {
+    const promises = [];
     for (let i = 1; i <= 1025; i++) {
-        const response = await fetch(URL + i);
-        const data = await response.json();
-        mostrarPokemon(data); // Mostrar el Pokémon inmediatamente
-        cachedPokemonData.push(data); // Añadir a la cache
+        promises.push(fetch(URL + i).then(response => response.json()));
     }
-    localStorage.setItem('pokemonData', JSON.stringify(cachedPokemonData)); // Guardar en localStorage después de cargar
+    const results = await Promise.all(promises); // Esperar a que todas las promesas se resuelvan
+    cachedPokemonData = results;
+    mostrarTodosLosPokemon();
+    localStorage.setItem('pokemonData', JSON.stringify(cachedPokemonData));
 }
 
-// Función para cargar desde localStorage o desde la API si no existe
 function cargarPokemon() {
     const pokemonDataFromStorage = localStorage.getItem('pokemonData');
-    
     if (pokemonDataFromStorage) {
-        // Si los datos están en localStorage, los usamos
         cachedPokemonData = JSON.parse(pokemonDataFromStorage);
-        mostrarTodosLosPokemon(); // Mostrar todos los Pokémon inmediatamente
+        mostrarTodosLosPokemon();
     } else {
-        // Si no, los cargamos desde la API y mostramos cada Pokémon al obtenerlo
-        fetchAllPokemonIncremental();
+        fetchAllPokemonInParallel(); // Cargar todos los Pokémon en paralelo
     }
 }
 
-// Función para mostrar un Pokémon en el DOM
 function mostrarPokemon(data) {
     let types = data.types.map((type) => `<p class="${type.type.name} type">${type.type.name}</p>`).join('');
+    let pokeId = data.id.toString().padStart(4, '0');
     
-    let pokeId = data.id.toString().padStart(4, '0'); // Formatear el ID para que siempre tenga 3 dígitos
-
     const div = document.createElement("div");
     div.classList.add("pokemon");
     div.innerHTML = `
         <p class="pokemon_id_back">#${pokeId}</p>
-        <div class="image_pokemon">
-          <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}">
+        <div class="image_pokemon lazy">
+          <img data-src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
         </div>
         <div class="info_pokemon">
             <div class="conter_name">
@@ -57,26 +50,38 @@ function mostrarPokemon(data) {
     pokemonList.append(div);
 }
 
-// Función para mostrar todos los Pokémon (usando la cache ya cargada)
 function mostrarTodosLosPokemon() {
-    pokemonList.innerHTML = ""; // Limpiar la lista
-    cachedPokemonData.forEach(mostrarPokemon); // Mostrar todos los Pokémon
+    pokemonList.innerHTML = "";
+    cachedPokemonData.forEach(mostrarPokemon);
+    lazyLoadImages(); // Aplicar lazy loading a las imágenes
 }
 
-// Función para filtrar Pokémon por generación o tipo
+function lazyLoadImages() {
+    const lazyImages = document.querySelectorAll('.lazy-img');
+    const intersectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src; // Cargar la imagen cuando esté en la vista
+                img.classList.remove('lazy-img');
+                observer.unobserve(img);
+            }
+        });
+    });
+    
+    lazyImages.forEach(img => {
+        intersectionObserver.observe(img);
+    });
+}
+
 function filtrarPokemon(btnId) {
-    pokemonList.innerHTML = ""; // Limpiamos la lista antes de mostrar los nuevos resultados
-    let filteredPokemon;        
+    pokemonList.innerHTML = "";
+    let filteredPokemon;
 
-    function mostrarTodosLosPokemon() {
-
-    }
-
-    // Filtrar por generación
     switch (btnId) {
         case 'btn-search':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name === document.getElementById("search").value || pokemon.id === parseInt(document.getElementById("search").value))
-            break;  
+            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name === document.getElementById("search").value || pokemon.id === parseInt(document.getElementById("search").value));
+            break;
         case 'ver-todos':
             filteredPokemon = cachedPokemonData;
             break;
@@ -108,16 +113,14 @@ function filtrarPokemon(btnId) {
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 905 && pokemon.id <= 1025);
             break;
         default:
-            // Filtrar por tipo
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.types.some(type => type.type.name.includes(btnId)));
             break;
     }
 
-    // Mostrar los Pokémon filtrados
     filteredPokemon.forEach(mostrarPokemon);
+    lazyLoadImages(); // Aplicar lazy loading tras filtrar
 }
 
-// Agregamos un event listener para cada botón
 btnHeader.forEach(btn => {
     btn.addEventListener("click", (event) => {
         const btnId = event.currentTarget.id;
@@ -127,10 +130,10 @@ btnHeader.forEach(btn => {
 
 document.getElementById('search').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault(); // Evita el comportamiento por defecto del Enter
-        filtrarPokemon('btn-search'); // Llama a la función de búsqueda con el ID del botón de búsqueda
+        event.preventDefault();
+        filtrarPokemon('btn-search');
     }
 });
 
-// Llamamos a la función para cargar Pokémon al inicio de la página
 cargarPokemon();
+
