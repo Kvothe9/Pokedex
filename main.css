@@ -46,7 +46,7 @@ button {
 /* Aquí todo el CSS extra */
 body {
     min-height: 100vh;
-    background-image: url("https://img.freepik.com/free-vector/gradient-zoom-effect-blue-background_23-2149762303.jpg?t=st=1726516105~exp=1726519705~hmac=271a003937388afc80e51e8d782153fb45cfd1e6f386528408a3c4c9704d72b1&w=996");
+    background-image: url("background.jpg");
     width: 100%;
     height: 100%;
     background-size: cover; /* Ajusta la imagen para que cubra todo el área */
@@ -349,4 +349,19 @@ main {
 
 .image_pokemon:hover {
     transform: scale(1.2);
+}
+
+.search {
+    background-color: var(--clr-gray);
+    padding: .5rem;
+    border-radius: 100vmax;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+    transition: .2s;
+}
+
+.search:hover {
+    box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
 }

@@ -66,10 +66,17 @@ function mostrarTodosLosPokemon() {
 // Función para filtrar Pokémon por generación o tipo
 function filtrarPokemon(btnId) {
     pokemonList.innerHTML = ""; // Limpiamos la lista antes de mostrar los nuevos resultados
-    let filteredPokemon;
+    let filteredPokemon;        
+
+    function mostrarTodosLosPokemon() {
+
+    }
 
     // Filtrar por generación
     switch (btnId) {
+        case 'btn-search':
+            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name === document.getElementById("search").value || pokemon.id === parseInt(document.getElementById("search").value))
+            break;  
         case 'ver-todos':
             filteredPokemon = cachedPokemonData;
             break;
@@ -118,6 +125,12 @@ btnHeader.forEach(btn => {
     });
 });
 
+document.getElementById('search').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Evita el comportamiento por defecto del Enter
+        filtrarPokemon('btn-search'); // Llama a la función de búsqueda con el ID del botón de búsqueda
+    }
+});
+
 // Llamamos a la función para cargar Pokémon al inicio de la página
 cargarPokemon();
-
