@@ -33,7 +33,7 @@ function mostrarPokemon(data) {
     div.innerHTML = `
         <p class="pokemon_id_back">#${pokeId}</p>
         <div class="image_pokemon lazy">
-          <img data-src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
+          <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
         </div>
         <div class="info_pokemon">
             <div class="conter_name">
@@ -53,35 +53,54 @@ function mostrarPokemon(data) {
 function mostrarTodosLosPokemon() {
     pokemonList.innerHTML = "";
     cachedPokemonData.forEach(mostrarPokemon);
-    lazyLoadImages(); // Aplicar lazy loading a las imágenes
 }
 
-function lazyLoadImages() {
-    const lazyImages = document.querySelectorAll('.lazy-img');
-    const intersectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src; // Cargar la imagen cuando esté en la vista
-                img.classList.remove('lazy-img');
-                observer.unobserve(img);
-            }
-        });
-    });
-    
-    lazyImages.forEach(img => {
-        intersectionObserver.observe(img);
-    });
+// Filtrado por búsqueda en tiempo real (coincidencia parcial)
+function filtrarPokemon(query) {
+    pokemonList.innerHTML = ""; // Limpiar la lista
+    let filteredPokemon;
+
+    if (query) {
+        filteredPokemon = cachedPokemonData.filter(pokemon => 
+            pokemon.name.toLowerCase().includes(query.toLowerCase())
+        );
+    } else {
+        filteredPokemon = cachedPokemonData;
+    }
+
+    if (filteredPokemon.length === 0) {
+        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
+    } else {
+        filteredPokemon.forEach(mostrarPokemon); // Mostrar los Pokémon filtrados
+    }
 }
 
-function filtrarPokemon(btnId) {
+// Filtrado por búsqueda exacta (por nombre o ID)
+function filtrarPokemonExacto(query) {
+    pokemonList.innerHTML = ""; // Limpiar la lista
+    let filteredPokemon;
+
+    if (!isNaN(query)) {
+        // Si el query es un número, buscar por ID
+        filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id === parseInt(query));
+    } else {
+        // Si no es un número, buscar por nombre exacto
+        filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name.toLowerCase() === query.toLowerCase());
+    }
+
+    if (filteredPokemon.length === 0) {
+        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
+    } else {
+        filteredPokemon.forEach(mostrarPokemon); // Mostrar los Pokémon filtrados
+    }
+}
+
+// Filtrado por tipos o generaciones
+function filtrarPorBtn(btnId) {
     pokemonList.innerHTML = "";
     let filteredPokemon;
 
     switch (btnId) {
-        case 'btn-search':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name === document.getElementById("search").value || pokemon.id === parseInt(document.getElementById("search").value));
-            break;
         case 'ver-todos':
             filteredPokemon = cachedPokemonData;
             break;
@@ -113,27 +132,46 @@ function filtrarPokemon(btnId) {
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 905 && pokemon.id <= 1025);
             break;
         default:
+            // Filtrado por tipo
             filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.types.some(type => type.type.name.includes(btnId)));
             break;
     }
 
-    filteredPokemon.forEach(mostrarPokemon);
-    lazyLoadImages(); // Aplicar lazy loading tras filtrar
+    if (filteredPokemon.length === 0) {
+        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
+    } else {
+        filteredPokemon.forEach(mostrarPokemon);
+    }
 }
 
+// Evento para los botones de generaciones y tipos
 btnHeader.forEach(btn => {
     btn.addEventListener("click", (event) => {
         const btnId = event.currentTarget.id;
-        filtrarPokemon(btnId);
+        filtrarPorBtn(btnId);
     });
 });
 
+// Evento input para búsqueda en tiempo real
+document.getElementById('search').addEventListener('input', function(event) {
+    const searchQuery = event.target.value.trim();
+    filtrarPokemon(searchQuery);  // Búsqueda en tiempo real por coincidencias parciales
+});
+
+// Evento para buscar Pokémon por nombre o ID exacto al presionar Enter o hacer click en el botón
 document.getElementById('search').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();
-        filtrarPokemon('btn-search');
+        const searchQuery = event.target.value.trim();
+        filtrarPokemonExacto(searchQuery);  // Búsqueda exacta por nombre o ID
     }
 });
 
+document.getElementById('btn-search').addEventListener('click', function() {
+    const searchQuery = document.getElementById('search').value.trim();
+    filtrarPokemonExacto(searchQuery);  // Búsqueda exacta por nombre o ID
+});
+
 cargarPokemon();
+
+
 
