@@ -24,37 +24,132 @@ function cargarPokemon() {
     }
 }
 
-function mostrarPokemon(data) {
-    let types = data.types.map((type) => `<p class="${type.type.name} type">${type.type.name}</p>`).join('');
+async function mostrarPokemon(data) {
+
+    let type = data.types.map((type) => `<p class="${type.type.name} type">${type.type.name}</p>`).join('');
     let pokeId = data.id.toString().padStart(4, '0');
+
+    let speciesData = await fetch(data.species.url).then(res => res.json());
+
+    let nombreES = speciesData.names.find(n => n.language.name === "es")?.name || data.name;
+
+    let moves = await getMovesWithType(data.moves);
+
+
+    let types = data.types.map((type) => `
+        <p class="${type.type.name} type">
+            ${traducirTipo(type.type.name)}
+        </p>
+    `).join('');
+
     
+    let stats = data.stats.map(stat => `
+        <div class="stat_row">
+            <span>${traducirStat(stat.stat.name)}</span>
+            <span>${stat.base_stat}</span>
+        </div>
+    `).join('');
+
+
+
+    
+
+
+function traducirTipo(tipo) {
+    const tipos = {
+        fire: "fuego",
+        water: "agua",
+        grass: "planta",
+        electric: "eléctrico",
+        ice: "hielo",
+        fighting: "lucha",
+        poison: "veneno",
+        ground: "tierra",
+        flying: "volador",
+        psychic: "psíquico",
+        bug: "bicho",
+        rock: "roca",
+        ghost: "fantasma",
+        dark: "siniestro",
+        dragon: "dragón",
+        steel: "acero",
+        fairy: "hada",
+        normal: "normal"
+    };
+
+    return tipos[tipo] || tipo;
+}
+
+
+
+function traducirStat(stat) {
+    const traducciones = {
+        hp: "PS",
+        attack: "Ataque",
+        defense: "Defensa",
+        "special-attack": "At. Esp.",
+        "special-defense": "Def. Esp.",
+        speed: "Velocidad"
+    };
+
+    return traducciones[stat] || stat;
+}
+
     const div = document.createElement("div");
     div.classList.add("pokemon");
+
     div.innerHTML = `
         <p class="pokemon_id_back">#${pokeId}</p>
-        <div class="image_pokemon lazy">
-          <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
+
+        <div class="image_pokemon">
+            <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}">
         </div>
+
         <div class="info_pokemon">
             <div class="conter_name">
                 <p class="id_pokemon">#${pokeId}</p>
                 <h2 class="name_pokemon">${data.name}</h2>
             </div>
+
             <div class="types_pokemon">${types}</div>
+
             <div class="stats">
                 <p class="stat">${data.height/10}m</p>
                 <p class="stat">${data.weight/10}kg</p>
             </div>
         </div>
+
+        <div class="card_extra">
+            <div class="extra_content">
+                <h4>Moves</h4>
+                <div class="moves_container">
+                    ${moves}
+                </div>
+
+                <h4>Stats</h4>
+                <div class="stats_container">
+                    ${stats}
+                </div>
+            </div>
+        </div>
     `;
+    
+    // abrir/cerrar
+    div.addEventListener("click", (e) => {
+        if (e.target.closest(".card_extra")) return;
+        div.classList.toggle("active");
+    });
+
     pokemonList.append(div);
 }
 
-function mostrarTodosLosPokemon() {
+async function mostrarTodosLosPokemon() {
     pokemonList.innerHTML = "";
-    cachedPokemonData.forEach(mostrarPokemon);
-}
 
+    for (const pokemon of cachedPokemonData) {
+        await mostrarPokemon(pokemon);
+    }
+}
 // Filtrado por búsqueda en tiempo real (coincidencia parcial)
 function filtrarPokemon(query) {
     pokemonList.innerHTML = ""; // Limpiar la lista
@@ -173,5 +268,20 @@ document.getElementById('btn-search').addEventListener('click', function() {
 
 cargarPokemon();
 
+async function getMovesWithType(moves) {
+    const selectedMoves = moves.slice(0, 4);
 
+    const movesData = await Promise.all(
+        selectedMoves.map(m => fetch(m.move.url).then(res => res.json()))
+    );
 
+    return movesData.map(move => {
+        let nombreES = move.names.find(n => n.language.name === "es")?.name || move.name;
+
+        return `
+            <span class="move ${move.type.name}">
+                ${nombreES}
+            </span>
+        `;
+    }).join('');
+}

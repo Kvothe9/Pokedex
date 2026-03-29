@@ -365,3 +365,69 @@ main {
 .search:hover {
     box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
 }
+
+
+
+/* PANEL DESLIZANTE */
+.card_extra {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+
+    border-radius: 1rem;
+    z-index: 10;
+
+    max-height: 70%;
+    overflow-y: auto;
+}
+
+/* ACTIVO */
+.pokemon.active .card_extra {
+    transform: translateY(0);
+}
+
+/* CONTENIDO */
+.extra_content {
+    padding: 15px;
+    color: white;
+}
+
+/* MOVES */
+.moves_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.move {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+    white-space: nowrap;
+}
+
+/* STATS */
+.stat_row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: white;
+}
+
+/* SCROLL BONITO */
+.card_extra::-webkit-scrollbar {
+    width: 6px;
+}
+
+.card_extra::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+}
