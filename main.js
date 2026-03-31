@@ -69,12 +69,23 @@ function mostrarPokemon(data) {
     let types = data.types.map((type) => `<p class="${type.type.name} type">${traducirTipo(type.type.name)}</p>`).join('');
     let pokeId = data.id.toString().padStart(4, '0');
     
-    let stats = data.stats.map(stat => `
-    <div class="stat_row">
-        <span>${traducirStat(stat.stat.name)}</span>
-        <span>${stat.base_stat}</span>
-    </div>
-    `).join('');
+    let stats = data.stats.map(stat => {
+    let valor = stat.base_stat;
+    let porcentaje = Math.min((valor / 150) * 100, 100); // escala (150 ≈ stat alto)
+
+    return `
+        <div class="stat_row ${stat.stat.name}">
+            <div class="stat_info">
+                <span class="stat_name">${traducirStat(stat.stat.name)}</span>
+                <span class="stat_value">${valor}</span>
+            </div>
+
+            <div class="stat_bar">
+                <div class="stat_fill" style="--final-width: ${porcentaje}%"></div>
+            </div>
+        </div>
+    `;
+}).join('');
 
     const div = document.createElement("div");
     div.classList.add("pokemon");

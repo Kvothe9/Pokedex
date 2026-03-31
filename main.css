@@ -432,7 +432,111 @@ main {
     border-radius: 10px;
 }
 
-.card_extra h4,
-.card_extra .stat_row span {
-    color: white;
+.card_extra {
+    max-height: none;   /* 👈 clave */
+    overflow-y: visible;
 }
+
+/* HP */
+.stat_row.hp span:first-child {
+    color: #59b941;
+}
+
+/* Ataque */
+.stat_row.attack span:first-child {
+    color: #f7b500;
+}
+
+
+/* Defensa */
+.stat_row.defense span:first-child {
+    color: #e68d39;
+}
+
+/* Ataque especial */
+.stat_row.special-attack span:first-child {
+    color: #54b8d6;
+}
+
+/* Defensa especial */
+.stat_row.special-defense span:first-child {
+    color: #703dce;
+}
+
+/* Velocidad */
+.stat_row.speed span:first-child {
+    color: #a366ff;
+}
+
+
+.stat_row {
+    display: block; /* 👈 clave */
+    margin-bottom: 8px;
+}
+
+.stat_info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.stat_name {
+    color: rgba(255,255,255,0.7);
+}
+
+.stat_value {
+    color: white;
+    font-weight: bold;
+}
+
+.stat_bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat_fill {
+    height: 100%;
+    width: 0;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.stat_row.hp .stat_fill {
+    background: #59b941;
+}
+
+.stat_row.attack .stat_fill {
+    background: #f7b500;
+}
+
+.stat_row.defense .stat_fill {
+    background: #e68d39;
+}
+
+.stat_row.special-attack .stat_fill {
+    background: #54b8d6;
+}
+
+.stat_row.special-defense .stat_fill {
+    background: #703dce;
+}
+
+.stat_row.speed .stat_fill {
+    background: #a366ff;
+}
+
+.stat_fill {
+    width: 0;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.pokemon.active .stat_fill {
+    width: var(--final-width);
+}
+
