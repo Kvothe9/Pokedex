@@ -540,3 +540,101 @@ main {
     width: var(--final-width);
 }
 
+.team-wrapper {
+    margin-bottom: 20px;
+}
+
+#toggle-team {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    background: #6c5ce7;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#toggle-team:hover {
+    background: #4834d4;
+}
+
+#team-container {
+    margin-top: 15px;
+    background: #111;
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.team-slots {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.team-slot {
+    background: #222;
+    border-radius: 12px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.team-slot img {
+    width: 70px;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+
+.add-team-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    border: none;
+    background: #00b894;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10;
+    transition: 0.2s;
+}
+
+.add-team-btn:hover {
+    transform: scale(1.1);
+    background: #019875;
+}
+
+.add-team-btn {
+    opacity: 0;
+}
+
+.pokemon:hover .add-team-btn {
+    opacity: 1;
+}
