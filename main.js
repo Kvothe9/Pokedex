@@ -3,6 +3,78 @@ const btnHeader = document.querySelectorAll(".btn-header");
 const URL = "https://pokeapi.co/api/v2/pokemon/";
 let cachedPokemonData = [];
 
+
+let equipo = JSON.parse(localStorage.getItem("equipo")) || [];
+
+function guardarEquipo() {
+    localStorage.setItem("equipo", JSON.stringify(equipo));
+}
+
+function renderEquipo() {
+    const teamContainer = document.querySelector("#team");
+    if (!teamContainer) return;
+
+    teamContainer.innerHTML = "";
+
+    for (let i = 0; i < 6; i++) {
+        const slot = document.createElement("div");
+        slot.classList.add("team-slot");
+
+        if (equipo[i]) {
+            slot.innerHTML = `
+                <span class="remove-btn">X</span>
+                <img src="${equipo[i].sprites.front_default}" />
+            `;
+
+            slot.querySelector(".remove-btn").addEventListener("click", (e) => {
+                e.stopPropagation();
+                eliminarPokemon(i);
+            });
+
+        } else {
+            slot.innerHTML = `<span>+</span>`;
+        }
+
+        teamContainer.appendChild(slot);
+    }
+}
+
+function añadirAlEquipo(id) {
+    if (equipo.length >= 6) {
+        alert("Máximo 6 Pokémon");
+        return;
+    }
+
+    const pokemon = cachedPokemonData.find(p => p.id === id);
+    if (!pokemon) return;
+
+    if (equipo.some(p => p.id === id)) {
+        alert("Ya está en el equipo");
+        return;
+    }
+
+    equipo.push(pokemon);
+    guardarEquipo();
+    renderEquipo();
+}
+
+function eliminarPokemon(index) {
+    equipo.splice(index, 1);
+    guardarEquipo();
+    renderEquipo();
+}
+
+document.getElementById("toggle-team").addEventListener("click", () => {
+    const container = document.getElementById("team-container");
+    container.classList.toggle("hidden");
+
+    if (!container.classList.contains("hidden")) {
+        renderEquipo();
+    }
+});
+
+
+
 async function fetchAllPokemonInParallel() {
     const promises = [];
     for (let i = 1; i <= 1025; i++) {
@@ -70,25 +142,26 @@ function mostrarPokemon(data) {
     let pokeId = data.id.toString().padStart(4, '0');
     
     let stats = data.stats.map(stat => {
-    let valor = stat.base_stat;
-    let porcentaje = Math.min((valor / 150) * 100, 100); // escala (150 ≈ stat alto)
+        let valor = stat.base_stat;
+        let porcentaje = Math.min((valor / 150) * 100, 100);
 
-    return `
-        <div class="stat_row ${stat.stat.name}">
-            <div class="stat_info">
-                <span class="stat_name">${traducirStat(stat.stat.name)}</span>
-                <span class="stat_value">${valor}</span>
-            </div>
+        return `
+            <div class="stat_row ${stat.stat.name}">
+                <div class="stat_info">
+                    <span class="stat_name">${traducirStat(stat.stat.name)}</span>
+                    <span class="stat_value">${valor}</span>
+                </div>
 
-            <div class="stat_bar">
-                <div class="stat_fill" style="--final-width: ${porcentaje}%"></div>
+                <div class="stat_bar">
+                    <div class="stat_fill" style="--final-width: ${porcentaje}%"></div>
+                </div>
             </div>
-        </div>
-    `;
-}).join('');
+        `;
+    }).join('');
 
     const div = document.createElement("div");
     div.classList.add("pokemon");
+
     div.innerHTML = `
     <p class="pokemon_id_back">#${pokeId}</p>
 
@@ -96,18 +169,25 @@ function mostrarPokemon(data) {
         <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
     </div>
 
-    <div class="info_pokemon">
-        <div class="conter_name">
-            <p class="id_pokemon">#${pokeId}</p>
-            <h2 class="name_pokemon">${data.name}</h2>
-        </div>
+    
+        <!-- 🔥 BOTÓN COMO OVERLAY -->
+    <button class="add-team-btn" data-id="${data.id}">
+        +
+    </button>
 
-        <div class="types_pokemon">${types}</div>
+<div class="info_pokemon">
+    <div class="conter_name">
+        <p class="id_pokemon">#${pokeId}</p>
+        <h2 class="name_pokemon">${data.name}</h2>
+    </div>
 
-        <div class="stats">
-            <p class="stat">${data.height/10}m</p>
-            <p class="stat">${data.weight/10}kg</p>
-        </div>
+    <div class="types_pokemon">${types}</div>
+
+    <div class="stats">
+        <p class="stat">${data.height/10}m</p>
+        <p class="stat">${data.weight/10}kg</p>
+    </div>
+</div>
     </div>
 
     <div class="card_extra">
@@ -118,11 +198,23 @@ function mostrarPokemon(data) {
             </div>
         </div>
     </div>
-`;
-    
-    div.addEventListener("click", () => {
-     div.classList.toggle("active");
+    `;
+
+    // 🔥 EVENTO BOTÓN (CLAVE)
+    const btn = div.querySelector(".add-team-btn");
+
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation(); // evita abrir la card
+        añadirAlEquipo(parseInt(btn.dataset.id));
     });
+
+    // 🔥 TU CLICK ORIGINAL (pero protegido)
+    div.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("add-team-btn")) {
+            div.classList.toggle("active");
+        }
+    });
+
     pokemonList.append(div);
 }
 
@@ -241,6 +333,9 @@ document.getElementById('search').addEventListener('keypress', function(event) {
         filtrarPokemonExacto(searchQuery);  // Búsqueda exacta por nombre o ID
     }
 });
+
+
+
 
 document.getElementById('btn-search').addEventListener('click', function() {
     const searchQuery = document.getElementById('search').value.trim();
