@@ -192,7 +192,7 @@ function mostrarPokemon(data) {
 
     <div class="card_extra">
         <div class="extra_content">
-            <h4>Estadísticas</h4>
+            <h2 class="name_pokemon">${data.name}</h2>
             <div class="stats_container">
                 ${stats}
             </div>
