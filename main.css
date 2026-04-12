@@ -153,6 +153,7 @@ main {
 .image_pokemon img {
     width: 100%;
     max-width: 6rem;
+    image-rendering: pixelated;
 }
 
 .info_pokemon {
