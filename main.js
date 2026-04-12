@@ -1,9 +1,11 @@
-
 const pokemonList = document.querySelector("#pokemon_list");
 const btnHeader = document.querySelectorAll(".btn-header");
 const URL = "https://pokeapi.co/api/v2/pokemon/";
-let cachedPokemonData = [];
 
+let cachedPokemonData = [];
+let isLoading = false;
+let renderIndex = 0;
+const RENDER_STEP = 50;
 
 let equipo = JSON.parse(localStorage.getItem("equipo")) || [];
 
@@ -31,7 +33,6 @@ function renderEquipo() {
                 e.stopPropagation();
                 eliminarPokemon(i);
             });
-
         } else {
             slot.innerHTML = `<span>+</span>`;
         }
@@ -75,300 +76,241 @@ document.getElementById("toggle-team").addEventListener("click", () => {
 });
 
 
+// =========================
+// 🔥 CARGA POKÉMON OPTIMIZADA
+// =========================
 
 async function fetchAllPokemonInParallel() {
-    const promises = [];
-    for (let i = 1; i <= 1025; i++) {
-        promises.push(fetch(URL + i).then(response => response.json()));
+    if (isLoading) return;
+    isLoading = true;
+
+    pokemonList.innerHTML = "";
+
+    const limit = 50;
+    const total = 1025;
+    const results = [];
+
+    for (let start = 1; start <= total; start += limit) {
+        const batch = [];
+
+        for (let i = start; i < start + limit && i <= total; i++) {
+            batch.push(
+                fetch(URL + i)
+                    .then(res => res.json())
+                    .catch(() => null)
+            );
+        }
+
+        const data = await Promise.all(batch);
+        results.push(...data.filter(Boolean));
+
+        cachedPokemonData = results;
+        renderChunk();
     }
-    const results = await Promise.all(promises); // Esperar a que todas las promesas se resuelvan
+
     cachedPokemonData = results;
-    mostrarTodosLosPokemon();
-    localStorage.setItem('pokemonData', JSON.stringify(cachedPokemonData));
-}
 
-function cargarPokemon() {
-    const pokemonDataFromStorage = localStorage.getItem('pokemonData');
-    if (pokemonDataFromStorage) {
-        cachedPokemonData = JSON.parse(pokemonDataFromStorage);
-        mostrarTodosLosPokemon();
-    } else {
-        fetchAllPokemonInParallel(); // Cargar todos los Pokémon en paralelo
+    renderAllPokemon();
+
+    try {
+        localStorage.setItem("pokemonData", JSON.stringify(cachedPokemonData));
+    } catch (e) {
+        console.warn("localStorage lleno, ignorado");
     }
+
+    isLoading = false;
 }
 
+// =========================
+// 🔥 RENDER OPTIMIZADO
+// =========================
 
-function traducirTipo(tipo) {
-    const tipos = {
-        fire: "fuego",
-        water: "agua",
-        grass: "planta",
-        electric: "eléctrico",
-        ice: "hielo",
-        fighting: "lucha",
-        poison: "veneno",
-        ground: "tierra",
-        flying: "volador",
-        psychic: "psíquico",
-        bug: "bicho",
-        rock: "roca",
-        ghost: "fantasma",
-        dark: "siniestro",
-        dragon: "dragón",
-        steel: "acero",
-        fairy: "hada",
-        normal: "normal"
-    };
-
-    return tipos[tipo] || tipo;
-}
-
-
-function traducirStat(stat) {
-    const traducciones = {
-        hp: "PS",
-        attack: "Ataque",
-        defense: "Defensa",
-        "special-attack": "At. Esp.",
-        "special-defense": "Def. Esp.",
-        speed: "Velocidad"
-    };
-
-    return traducciones[stat] || stat;
-}
-
-
-function mostrarPokemon(data) {
-    let types = data.types.map((type) => `<p class="${type.type.name} type">${traducirTipo(type.type.name)}</p>`).join('');
-    let pokeId = data.id.toString().padStart(4, '0');
-    
-    let stats = data.stats.map(stat => {
-        let valor = stat.base_stat;
-        let porcentaje = Math.min((valor / 150) * 100, 100);
-
-        return `
-            <div class="stat_row ${stat.stat.name}">
-                <div class="stat_info">
-                    <span class="stat_name">${traducirStat(stat.stat.name)}</span>
-                    <span class="stat_value">${valor}</span>
-                </div>
-
-                <div class="stat_bar">
-                    <div class="stat_fill" style="--final-width: ${porcentaje}%"></div>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-
-
+function createPokemonCard(data) {
     const div = document.createElement("div");
     div.classList.add("pokemon");
 
+    let pokeId = data.id.toString().padStart(4, '0');
+
+    const normalSprite = data.sprites.versions['generation-v']['black-white']['animated'].front_default;
+    const shinySprite = data.sprites.versions['generation-v']['black-white']['animated'].front_shiny;
+
+    let isShiny = false;
+
     div.innerHTML = `
-    <p class="pokemon_id_back">#${pokeId}</p>
+        <p class="pokemon_id_back">#${pokeId}</p>
 
-    <div class="image_pokemon lazy">
-        <img src="${data.sprites.versions['generation-v']['black-white']['animated'].front_default}" alt="${data.name}" class="lazy-img">
-    </div>
-
-    
-        <!-- BOTÓN COMO OVERLAY -->
-    <button class="add-team-btn" data-id="${data.id}">
-        +
-    </button>
-    <button class="shiny-btn">✨</button>
-
-    <div class="info_pokemon">
-    <div class="conter_name">
-        <p class="id_pokemon">#${pokeId}</p>
-        <h2 class="name_pokemon">${data.name}</h2>
-    </div>
-
-    <div class="types_pokemon">${types}</div>
-
-    <div class="stats">
-        <p class="stat">${data.height/10}m</p>
-        <p class="stat">${data.weight/10}kg</p>
-    </div>
-    </div>
-    </div>
-
-    <div class="card_extra">
-        <div class="extra_content">
-            <h4 class="name_pokemon">${data.name}</h4>
-            <div class="stats_container">
-                ${stats}
-            </div>
+        <div class="image_pokemon">
+            <img src="${normalSprite}">
         </div>
-    </div>
-    `;
 
+        <button class="add-team-btn" data-id="${data.id}">+</button>
+        <button class="shiny-btn">✨</button>
+
+        <div class="info_pokemon">
+            <p>#${pokeId}</p>
+            <h2>${data.name}</h2>
+        </div>
+    `;
 
     const img = div.querySelector("img");
     const shinyBtn = div.querySelector(".shiny-btn");
 
-    // URLs
-    const normalSprite = data.sprites.versions['generation-v']['black-white']['animated'].front_default;
-    const shinySprite = data.sprites.versions['generation-v']['black-white']['animated'].front_shiny;
-
-    // estado
-    let isShiny = false;
-
     shinyBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // no abrir card
+        e.stopPropagation();
 
-    isShiny = !isShiny;
-
-    img.src = isShiny && shinySprite ? shinySprite : normalSprite;
+        isShiny = !isShiny;
+        img.src = isShiny && shinySprite ? shinySprite : normalSprite;
     });
 
-
-
-    // BOTÓN EQUIPO
     const btn = div.querySelector(".add-team-btn");
 
     btn.addEventListener("click", (e) => {
-        e.stopPropagation(); // evita abrir la card
+        e.stopPropagation();
         añadirAlEquipo(parseInt(btn.dataset.id));
     });
 
-    // 🔥 TU CLICK ORIGINAL (pero protegido)
-    div.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("add-team-btn")) {
-            div.classList.toggle("active");
-        }
+    div.addEventListener("click", () => {
+        div.classList.toggle("active");
     });
 
-    pokemonList.append(div);
+    return div;
 }
 
-function mostrarTodosLosPokemon() {
+function renderChunk() {
+    const fragment = document.createDocumentFragment();
+
+    const end = Math.min(renderIndex + RENDER_STEP, cachedPokemonData.length);
+
+    for (let i = renderIndex; i < end; i++) {
+        fragment.appendChild(createPokemonCard(cachedPokemonData[i]));
+    }
+
+    pokemonList.appendChild(fragment);
+    renderIndex = end;
+}
+
+function renderAllPokemon() {
     pokemonList.innerHTML = "";
-    cachedPokemonData.forEach(mostrarPokemon);
+    renderIndex = 0;
+
+    const interval = setInterval(() => {
+        renderChunk();
+
+        if (renderIndex >= cachedPokemonData.length) {
+            clearInterval(interval);
+        }
+    }, 0);
 }
 
-// Filtrado por búsqueda en tiempo real (coincidencia parcial)
+// =========================
+// 🔍 FILTROS
+// =========================
+
 function filtrarPokemon(query) {
-    pokemonList.innerHTML = ""; // Limpiar la lista
-    let filteredPokemon;
+    pokemonList.innerHTML = "";
 
-    if (query) {
-        filteredPokemon = cachedPokemonData.filter(pokemon => 
-            pokemon.name.toLowerCase().includes(query.toLowerCase())
-        );
-    } else {
-        filteredPokemon = cachedPokemonData;
-    }
+    let filtered = query
+        ? cachedPokemonData.filter(p =>
+            p.name.toLowerCase().includes(query.toLowerCase())
+        )
+        : cachedPokemonData;
 
-    if (filteredPokemon.length === 0) {
-        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
-    } else {
-        filteredPokemon.forEach(mostrarPokemon); // Mostrar los Pokémon filtrados
-    }
+    filtered.forEach(p => pokemonList.appendChild(createPokemonCard(p)));
 }
 
-// Filtrado por búsqueda exacta (por nombre o ID)
 function filtrarPokemonExacto(query) {
-    pokemonList.innerHTML = ""; // Limpiar la lista
-    let filteredPokemon;
+    pokemonList.innerHTML = "";
+
+    let filtered;
 
     if (!isNaN(query)) {
-        // Si el query es un número, buscar por ID
-        filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id === parseInt(query));
+        filtered = cachedPokemonData.filter(p => p.id === parseInt(query));
     } else {
-        // Si no es un número, buscar por nombre exacto
-        filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.name.toLowerCase() === query.toLowerCase());
+        filtered = cachedPokemonData.filter(p =>
+            p.name.toLowerCase() === query.toLowerCase()
+        );
     }
 
-    if (filteredPokemon.length === 0) {
-        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
-    } else {
-        filteredPokemon.forEach(mostrarPokemon); // Mostrar los Pokémon filtrados
+    if (!filtered.length) {
+        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>";
+        return;
     }
+
+    filtered.forEach(p => pokemonList.appendChild(createPokemonCard(p)));
 }
 
-// Filtrado por tipos o generaciones
 function filtrarPorBtn(btnId) {
     pokemonList.innerHTML = "";
-    let filteredPokemon;
+
+    let filtered;
 
     switch (btnId) {
-        case 'ver-todos':
-            filteredPokemon = cachedPokemonData;
+        case "ver-todos":
+            filtered = cachedPokemonData;
             break;
-        case 'gen1':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id <= 151);
+        case "gen1":
+            filtered = cachedPokemonData.filter(p => p.id <= 151);
             break;
-        case 'gen2':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 151 && pokemon.id <= 251);
+        case "gen2":
+            filtered = cachedPokemonData.filter(p => p.id > 151 && p.id <= 251);
             break;
-        case 'gen3':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 251 && pokemon.id <= 386);
+        case "gen3":
+            filtered = cachedPokemonData.filter(p => p.id > 251 && p.id <= 386);
             break;
-        case 'gen4':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 386 && pokemon.id <= 493);
+        case "gen4":
+            filtered = cachedPokemonData.filter(p => p.id > 386 && p.id <= 493);
             break;
-        case 'gen5':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 493 && pokemon.id <= 649);
+        case "gen5":
+            filtered = cachedPokemonData.filter(p => p.id > 493 && p.id <= 649);
             break;
-        case 'gen6':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 649 && pokemon.id <= 721);
+        case "gen6":
+            filtered = cachedPokemonData.filter(p => p.id > 649 && p.id <= 721);
             break;
-        case 'gen7':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 721 && pokemon.id <= 809);
+        case "gen7":
+            filtered = cachedPokemonData.filter(p => p.id > 721 && p.id <= 809);
             break;
-        case 'gen8':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 809 && pokemon.id <= 905);
+        case "gen8":
+            filtered = cachedPokemonData.filter(p => p.id > 809 && p.id <= 905);
             break;
-        case 'gen9':
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.id > 905 && pokemon.id <= 1025);
+        case "gen9":
+            filtered = cachedPokemonData.filter(p => p.id > 905 && p.id <= 1025);
             break;
         default:
-            // Filtrado por tipo
-            filteredPokemon = cachedPokemonData.filter(pokemon => pokemon.types.some(type => type.type.name.includes(btnId)));
-            break;
+            filtered = cachedPokemonData.filter(p =>
+                p.types.some(t => t.type.name.includes(btnId))
+            );
     }
 
-    if (filteredPokemon.length === 0) {
-        pokemonList.innerHTML = "<p>No se encontraron Pokémon</p>"; // Mensaje cuando no se encuentran resultados
-    } else {
-        filteredPokemon.forEach(mostrarPokemon);
-    }
+    filtered.forEach(p => pokemonList.appendChild(createPokemonCard(p)));
 }
 
-// Evento para los botones de generaciones y tipos
+// =========================
+// 🔘 EVENTOS
+// =========================
+
 btnHeader.forEach(btn => {
-    btn.addEventListener("click", (event) => {
-        const btnId = event.currentTarget.id;
-        filtrarPorBtn(btnId);
+    btn.addEventListener("click", e => {
+        filtrarPorBtn(e.currentTarget.id);
     });
 });
 
-// Evento input para búsqueda en tiempo real
-document.getElementById('search').addEventListener('input', function(event) {
-    const searchQuery = event.target.value.trim();
-    filtrarPokemon(searchQuery);  // Búsqueda en tiempo real por coincidencias parciales
+document.getElementById("search").addEventListener("input", e => {
+    filtrarPokemon(e.target.value.trim());
 });
 
-// Evento para buscar Pokémon por nombre o ID exacto al presionar Enter o hacer click en el botón
-document.getElementById('search').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        const searchQuery = event.target.value.trim();
-        filtrarPokemonExacto(searchQuery);  // Búsqueda exacta por nombre o ID
+document.getElementById("search").addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+        filtrarPokemonExacto(e.target.value.trim());
     }
 });
 
-
-
-
-document.getElementById('btn-search').addEventListener('click', function() {
-    const searchQuery = document.getElementById('search').value.trim();
-    filtrarPokemonExacto(searchQuery);  // Búsqueda exacta por nombre o ID
+document.getElementById("btn-search").addEventListener("click", () => {
+    const val = document.getElementById("search").value.trim();
+    filtrarPokemonExacto(val);
 });
 
-cargarPokemon();
+// =========================
+// 🚀 INIT
+// =========================
 
-
-
-
+fetchAllPokemonInParallel();
