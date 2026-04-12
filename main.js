@@ -1,3 +1,4 @@
+
 const pokemonList = document.querySelector("#pokemon_list");
 const btnHeader = document.querySelectorAll(".btn-header");
 const URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -159,6 +160,8 @@ function mostrarPokemon(data) {
         `;
     }).join('');
 
+
+
     const div = document.createElement("div");
     div.classList.add("pokemon");
 
@@ -170,12 +173,13 @@ function mostrarPokemon(data) {
     </div>
 
     
-        <!-- 🔥 BOTÓN COMO OVERLAY -->
+        <!-- BOTÓN COMO OVERLAY -->
     <button class="add-team-btn" data-id="${data.id}">
         +
     </button>
+    <button class="shiny-btn">✨</button>
 
-<div class="info_pokemon">
+    <div class="info_pokemon">
     <div class="conter_name">
         <p class="id_pokemon">#${pokeId}</p>
         <h2 class="name_pokemon">${data.name}</h2>
@@ -187,7 +191,7 @@ function mostrarPokemon(data) {
         <p class="stat">${data.height/10}m</p>
         <p class="stat">${data.weight/10}kg</p>
     </div>
-</div>
+    </div>
     </div>
 
     <div class="card_extra">
@@ -200,7 +204,28 @@ function mostrarPokemon(data) {
     </div>
     `;
 
-    // 🔥 EVENTO BOTÓN (CLAVE)
+
+    const img = div.querySelector("img");
+    const shinyBtn = div.querySelector(".shiny-btn");
+
+    // URLs
+    const normalSprite = data.sprites.versions['generation-v']['black-white']['animated'].front_default;
+    const shinySprite = data.sprites.versions['generation-v']['black-white']['animated'].front_shiny;
+
+    // estado
+    let isShiny = false;
+
+    shinyBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // no abrir card
+
+    isShiny = !isShiny;
+
+    img.src = isShiny && shinySprite ? shinySprite : normalSprite;
+    });
+
+
+
+    // BOTÓN EQUIPO
     const btn = div.querySelector(".add-team-btn");
 
     btn.addEventListener("click", (e) => {
