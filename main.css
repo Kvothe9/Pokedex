@@ -388,6 +388,10 @@ main {
     overflow-y: auto;
 }
 
+.cadr_extra h4 {
+    color: white;
+}
+
 /* ACTIVO */
 .pokemon.active .card_extra {
     transform: translateY(0);
