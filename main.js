@@ -166,7 +166,7 @@ function mostrarPokemon(data) {
     <p class="pokemon_id_back">#${pokeId}</p>
 
     <div class="image_pokemon lazy">
-        <img src="${data.sprites.other["official-artwork"].front_default}" alt="${data.name}" class="lazy-img">
+        <img src="${data.sprites.versions['generation-v']['black-white']['animated'].front_default}" alt="${data.name}" class="lazy-img">
     </div>
 
     
