@@ -148,12 +148,13 @@ main {
     display: flex;
     justify-content: center;
     transition: .3s;
+    align-items: center;
 }
 
 .image_pokemon img {
     width: 100%;
     max-width: 6rem;
-    image-rendering: pixelated;
+    height: auto;
 }
 
 .info_pokemon {
@@ -367,26 +368,21 @@ main {
     box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
 }
 
-
-
 /* PANEL DESLIZANTE */
 .card_extra {
     position: absolute;
-    bottom: 0;
+    top: 0;         /* 🔥 en vez de bottom */
     left: 0;
     width: 100%;
-
+    height: 100%;   /* 🔥 MISMO tamaño exacto */
     background: rgba(0,0,0,0.9);
     backdrop-filter: blur(10px);
-
     transform: translateY(100%);
     transition: transform 0.4s ease;
-
     border-radius: 1rem;
     z-index: 10;
-
-    max-height: 70%;
-    overflow-y: auto;
+    overflow: hidden; /* 🔥 SIN SCROLL */
+    transform: translateY(101%);
 }
 
 .card_extra h4 {
@@ -400,23 +396,7 @@ main {
 
 /* CONTENIDO */
 .extra_content {
-    padding: 15px;
-    color: white;
-}
-
-/* MOVES */
-.moves_container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.move {
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: white;
-    white-space: nowrap;
+    padding: 5px 15px;
 }
 
 /* STATS */
@@ -437,10 +417,6 @@ main {
     border-radius: 10px;
 }
 
-.card_extra {
-    max-height: none;   /* 👈 clave */
-    overflow-y: visible;
-}
 
 /* HP */
 .stat_row.hp span:first-child {
@@ -629,6 +605,7 @@ main {
 
     z-index: 10;
     transition: 0.2s;
+    image-rendering: crisp-edges;
 }
 
 .add-team-btn:hover {
@@ -641,5 +618,40 @@ main {
 }
 
 .pokemon:hover .add-team-btn {
+    opacity: 1;
+}
+
+.shiny-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    border: none;
+    background: gold;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10;
+    transition: 0.2s;
+}
+
+.shiny-btn:hover {
+    transform: scale(1.1);
+}
+
+.shiny-btn {
+    opacity: 0;
+}
+
+.pokemon:hover .shiny-btn {
     opacity: 1;
 }
