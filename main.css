@@ -130,6 +130,9 @@ main {
     position: relative;
     isolation: isolate;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .pokemon_id_back {
@@ -629,33 +632,60 @@ main {
     position: absolute;
     top: 8px;
     left: 8px;
-
     width: 32px;
     height: 32px;
     border-radius: 50%;
-
-    border: none;
-    background: gold;
-    color: black;
     font-weight: bold;
-    cursor: pointer;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     z-index: 10;
-    transition: 0.2s;
+
+    background: #222; /* 🔴 negro por defecto */
+    color: white;
+    border: none;
+
+    opacity: 0;
+    transition: 0.3s;
 }
 
+/* 👇 aparece al hacer hover en la card */
+.pokemon:hover .shiny-btn {
+    opacity: 1;
+}
+
+/* 🔥 ESTADO ACTIVO (CLICK) */
+.shiny-btn.active {
+  background: linear-gradient(
+        120deg,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #00ffff,
+        #0000ff,
+        #8b00ff,
+        #ff0000
+    );
+
+    background-size: 400% 400%;
+    animation: shinyMove 4s ease infinite;
+}
+
+/* 👇 solo efecto de tamaño al pasar ratón */
 .shiny-btn:hover {
     transform: scale(1.1);
 }
 
-.shiny-btn {
-    opacity: 0;
-}
-
-.pokemon:hover .shiny-btn {
-    opacity: 1;
+/* animación */
+@keyframes shinyMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
