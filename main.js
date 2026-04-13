@@ -203,7 +203,6 @@ function mostrarPokemon(data) {
     </div>
     `;
 
-
     const img = div.querySelector("img");
     const shinyBtn = div.querySelector(".shiny-btn");
 
@@ -220,6 +219,9 @@ function mostrarPokemon(data) {
     isShiny = !isShiny;
 
     img.src = isShiny && shinySprite ? shinySprite : normalSprite;
+
+    shinyBtn.classList.toggle("active");
+
     });
 
 
