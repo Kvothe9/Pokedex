@@ -156,6 +156,7 @@ function traducirStat(stat) {
 function mostrarPokemon(data) {
 
     const sprites = getSprites(data);
+    const isAnimated = data.id <= 649 && data.sprites.versions?.['generation-v']?.['black-white']?.animated?.front_default;
 
     let types = data.types.map(t =>
         `<p class="${t.type.name} type">${traducirTipo(t.type.name)}</p>`
@@ -187,7 +188,7 @@ function mostrarPokemon(data) {
         <p class="pokemon_id_back">#${pokeId}</p>
 
         <div class="image_pokemon">
-            <img src="${sprites.normal}" alt="${data.name}">
+            <img src="${sprites.normal}" alt="${data.name}" class="${isAnimated ? 'pixelated' : ''}">
         </div>
 
         <button class="add-team-btn" data-id="${data.id}">+</button>
