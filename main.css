@@ -192,6 +192,9 @@ main {
 
 .name_pokemon {
     font-size: 1.4rem;
+    white-space: nowrap;
+    max-width: 100%;
+    font-size: clamp(1rem, 2vw, 1.4rem);
 }
 
 .types_pokemon {
