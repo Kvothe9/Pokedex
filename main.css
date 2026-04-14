@@ -22,7 +22,697 @@
     --type-dark: #705848;
     --type-dragon: #7038F8;
     --type-steel: #B8B8D0;
+    --type-fairy: #F0B6BC;@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --clr-black: #1c1c1c;
+    --clr-gray: #ececec;
+    --clr-white: #f7f7f7;
+
+    --type-normal: #A8A878;
+    --type-fire: #F08030;
+    --type-water: #6890F0;
+    --type-grass: #78C850;
+    --type-electric: #F8D030;
+    --type-ice: #98D8D8;
+    --type-fighting: #C03028;
+    --type-poison: #A040A0;
+    --type-ground: #E0C068;
+    --type-flying: #A890F0;
+    --type-psychic: #F85888;
+    --type-bug: #A8B820;
+    --type-rock: #B8A038;
+    --type-ghost: #705898;
+    --type-dark: #705848;
+    --type-dragon: #7038F8;
+    --type-steel: #B8B8D0;
     --type-fairy: #F0B6BC;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: var(--clr-black);
+    font-family: 'Rubik', sans-serif;
+}
+
+ul {
+    list-style-type: none;
+}
+
+button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+/* Aquí todo el CSS extra */
+body {
+    min-height: 100vh;
+    background-image: url("background.jpg");
+    width: 100%;
+    height: 100%;
+    background-size: cover; /* Ajusta la imagen para que cubra todo el área */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+}
+
+header {
+    padding-block: 1rem;
+    box-shadow: 0 0 2rem -1rem rgba(0, 0, 0, .5);
+
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding-inline: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.nav-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+
+}
+
+.btn-header {
+    background-color: var(--clr-gray);
+    padding: .5rem;
+    border-radius: 100vmax;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+    transition: .2s;
+}
+
+.btn-header:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
+
+}
+
+main {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.all_pokemon {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media screen and (min-width: 470px) {
+    .all_pokemon {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (min-width: 700px) {
+    .all_pokemon {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.pokemon {
+    border-radius: 1rem;
+    background-color: var(--clr-white);
+    box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, .25);
+    padding-block: 1rem;
+    text-transform: uppercase;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pokemon_id_back {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    font-weight: 800;
+    z-index: -1;
+    color: var(--clr-gray);
+}
+
+.image_pokemon {
+    padding-inline: 1rem;
+    display: flex;
+    justify-content: center;
+    transition: .3s;
+    align-items: center;
+}
+
+.image_pokemon img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.info_pokemon {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding-inline: 1rem;
+    align-items: center;
+    text-align: center;
+}
+
+.conter_name {
+    display: flex;
+    align-items: center;
+    column-gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.id_pokemon {
+    background-color: var(--clr-gray);
+    padding: .25rem .5rem;
+    border-radius: 100vmax;
+    font-size: .75rem;
+    font-weight: 500;
+    
+}
+
+.name_pokemon {
+    font-size: 1.4rem;
+}
+
+.types_pokemon {
+    display: flex;
+    gap: .5rem;
+    font-size: .75rem;
+    font-weight: 500;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.type {
+    padding: .25rem .5rem;
+    border-radius: 100vmax;
+}
+
+.stats {
+    display: flex;
+    gap: 1rem;
+    font-size: .85rem;
+}
+
+.stat {
+    background-color: var(--clr-gray);
+    padding: .25rem .5rem;
+    border-radius: 100vmax;
+}
+
+/* Aquí comienzan los colores de botones según tipo */
+.normal {
+    background-color: var(--type-normal);
+    color: var(--clr-black);
+}
+
+.fire {
+    background-color: var(--type-fire);
+    color: var(--clr-black);
+}
+
+.water {
+    background-color: var(--type-water);
+    color: var(--clr-white);
+}
+
+.grass {
+    background-color: var(--type-grass);
+    color: var(--clr-black);
+}
+
+.electric {
+    background-color: var(--type-electric);
+    color: var(--clr-black);
+}
+
+.ice {
+    background-color: var(--type-ice);
+    color: var(--clr-black);
+}
+
+.fighting {
+    background-color: var(--type-fighting);
+    color: var(--clr-white);
+}
+
+.poison {
+    background-color: var(--type-poison);
+    color: var(--clr-white);
+}
+
+.ground {
+    background-color: var(--type-ground);
+    color: var(--clr-black);
+}
+
+.flying {
+    background-color: var(--type-flying);
+    color: var(--clr-black);
+}
+
+.psychic {
+    background-color: var(--type-psychic);
+    color: var(--clr-black);
+}
+
+.bug {
+    background-color: var(--type-bug);
+    color: var(--clr-black);
+}
+
+.rock {
+    background-color: var(--type-rock);
+    color: var(--clr-black);
+}
+
+.ghost {
+    background-color: var(--type-ghost);
+    color: var(--clr-white);
+}
+
+.dark {
+    background-color: var(--type-dark);
+    color: var(--clr-white);
+}
+
+.dragon {
+    background-color: var(--type-dragon);
+    color: var(--clr-white);
+}
+
+.steel {
+    background-color: var(--type-steel);
+    color: var(--clr-black);
+}
+
+.fairy {
+    background-color: var(--type-fairy);
+    color: var(--clr-black);
+}
+
+.gen1 {
+    background: linear-gradient(to right, #fb0000 50%, #0000f0 50%);
+
+}
+
+.gen2 {
+    background: linear-gradient(to right, #d7bf00 50%, #949495 50%);
+
+}
+
+.gen3 {
+    background: linear-gradient(to right, #d60000 50%, #0000bc 50%);
+
+}
+
+.gen4 {
+    background: linear-gradient(to right, #365de0 50%, #fd5edb 50%);
+
+}
+
+.gen5 {
+    background: linear-gradient(to right, #393839 50%, #dfdfdf 50%);
+
+}
+
+.gen6 {
+    background: linear-gradient(to right, #004585 50%, #8d0000 50%);
+
+}
+
+.gen7 {
+    background: linear-gradient(to right, #fd8b02 50%, #c627ea 50%);
+
+}
+
+.gen8 {
+    background: linear-gradient(to right, #009be9 50%, #fd1d63 50%);
+
+}
+
+.gen9 {
+    background: linear-gradient(to right, #b4180e 50%, #5a1176 50%);
+
+}
+
+.image_pokemon:hover {
+    transform: scale(1.2);
+}
+
+.search {
+    background-color: var(--clr-gray);
+    padding: .5rem;
+    border-radius: 100vmax;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+    transition: .2s;
+}
+
+.search:hover {
+    box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
+}
+
+/* PANEL DESLIZANTE */
+.card_extra {
+    position: absolute;
+    top: 0;         /* 🔥 en vez de bottom */
+    left: 0;
+    width: 100%;
+    height: 100%;   /* 🔥 MISMO tamaño exacto */
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+    border-radius: 1rem;
+    z-index: 10;
+    overflow: hidden; /* 🔥 SIN SCROLL */
+    transform: translateY(101%);
+}
+
+.card_extra h4 {
+    color: white;
+}
+
+/* ACTIVO */
+.pokemon.active .card_extra {
+    transform: translateY(0);
+}
+
+/* CONTENIDO */
+.extra_content {
+    padding: 5px 15px;
+}
+
+/* STATS */
+.stat_row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: white;
+}
+
+/* SCROLL BONITO */
+.card_extra::-webkit-scrollbar {
+    width: 6px;
+}
+
+.card_extra::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+}
+
+
+/* HP */
+.stat_row.hp span:first-child {
+    color: #59b941;
+}
+
+/* Ataque */
+.stat_row.attack span:first-child {
+    color: #f7b500;
+}
+
+
+/* Defensa */
+.stat_row.defense span:first-child {
+    color: #e68d39;
+}
+
+/* Ataque especial */
+.stat_row.special-attack span:first-child {
+    color: #54b8d6;
+}
+
+/* Defensa especial */
+.stat_row.special-defense span:first-child {
+    color: #703dce;
+}
+
+/* Velocidad */
+.stat_row.speed span:first-child {
+    color: #a366ff;
+}
+
+
+.stat_row {
+    display: block; /* 👈 clave */
+    margin-bottom: 8px;
+}
+
+.stat_info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.stat_name {
+    color: rgba(255,255,255,0.7);
+}
+
+.stat_value {
+    color: white;
+    font-weight: bold;
+}
+
+.stat_bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat_fill {
+    height: 100%;
+    width: 0;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.stat_row.hp .stat_fill {
+    background: #59b941;
+}
+
+.stat_row.attack .stat_fill {
+    background: #f7b500;
+}
+
+.stat_row.defense .stat_fill {
+    background: #e68d39;
+}
+
+.stat_row.special-attack .stat_fill {
+    background: #54b8d6;
+}
+
+.stat_row.special-defense .stat_fill {
+    background: #703dce;
+}
+
+.stat_row.speed .stat_fill {
+    background: #a366ff;
+}
+
+.stat_fill {
+    width: 0;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.pokemon.active .stat_fill {
+    width: var(--final-width);
+}
+
+.team-wrapper {
+    margin-bottom: 20px;
+}
+
+#toggle-team {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    background: #6c5ce7;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#toggle-team:hover {
+    background: #4834d4;
+}
+
+#team-container {
+    margin-top: 15px;
+    background: #111;
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+#team-container h2 {
+    color:white;
+}
+
+.hidden {
+    display: none;
+}
+
+.team-slots {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.team-slot {
+    background: #222;
+    border-radius: 12px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.team-slot img {
+    width: 70px;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+
+.add-team-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    border: none;
+    background: #00b894;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10;
+    transition: 0.2s;
+    image-rendering: crisp-edges;
+}
+
+.add-team-btn:hover {
+    transform: scale(1.1);
+    background: #019875;
+}
+
+.add-team-btn {
+    opacity: 0;
+}
+
+.pokemon:hover .add-team-btn {
+    opacity: 1;
+}
+
+.shiny-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+
+    background: #222; /* 🔴 negro por defecto */
+    color: white;
+    border: none;
+
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* 👇 aparece al hacer hover en la card */
+.pokemon:hover .shiny-btn {
+    opacity: 1;
+}
+
+/* 🔥 ESTADO ACTIVO (CLICK) */
+.shiny-btn.active {
+  background: linear-gradient(
+        120deg,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #00ffff,
+        #0000ff,
+        #8b00ff,
+        #ff0000
+    );
+
+    background-size: 400% 400%;
+    animation: shinyMove 4s ease infinite;
+}
+
+/* 👇 solo efecto de tamaño al pasar ratón */
+.shiny-btn:hover {
+    transform: scale(1.1);
+}
+
+/* animación */
+@keyframes shinyMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 }
 
 * {
