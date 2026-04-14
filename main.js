@@ -22,7 +22,7 @@ function renderEquipo() {
         if (equipo[i]) {
             slot.innerHTML = `
                 <span class="remove-btn">X</span>
-                <img src="${equipo[i].sprite}" />
+                <img src="${equipo[i].sprites.front_default}" />
             `;
 
             slot.querySelector(".remove-btn").addEventListener("click", (e) => {
