@@ -407,6 +407,10 @@ main {
 /* CONTENIDO */
 .extra_content {
     padding: 5px 15px;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
 }
 
 /* STATS */
