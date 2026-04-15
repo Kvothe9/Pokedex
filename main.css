@@ -402,6 +402,11 @@ main {
 /* ACTIVO */
 .pokemon.active .card_extra {
     transform: translateY(0);
+    transform: translateY(0);
+    display: flex;
+    justify-content: center;
+    align-content:center;
+    width:100%;
 }
 
 /* CONTENIDO */
